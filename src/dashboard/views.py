@@ -1,11 +1,14 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.utils import timezone
 
-# Create your views here.
+from landing_page.models import JoinRequest, Meeting, ProjectIdea
+
+
+@login_required
 def index(request):
-
-    #if user is not logged in, redirect to home page
-    if not request.user.is_authenticated:
-        return redirect('accounts:login')
-    
-    return render(request, 'dashboard/index.html')
+    return render(request, 'dashboard/index.html', {
+        'next_meeting': Meeting.objects.filter(date__gte=timezone.now()).first(),
+        'join_count': JoinRequest.objects.count(),
+        'idea_count': ProjectIdea.objects.count(),
+    })

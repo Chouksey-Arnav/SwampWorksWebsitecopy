@@ -1,4 +1,11 @@
 {% extends 'landing_page/base.html' %}
-{% load static %}
+{% block title %}Join - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
+<h1>Join the club</h1>
+<p>Fill this out and we'll email you the details for the next new members meeting.</p>
+<form method="post" class="form">
+    {% csrf_token %}
+    {% include 'partials/form_fields.html' %}
+    <button type="submit" class="button">Sign up</button>
+</form>
 {% endblock content %}

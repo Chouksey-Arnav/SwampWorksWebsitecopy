@@ -1,37 +1,19 @@
 {% extends 'accounts/base.html' %}
-{% load static %}
-
-{% block title %}Login{% endblock title %}
-
-{% block form %}
-    <form action="{% url 'accounts:login' %}" method="post">
-        {% csrf_token %}
-
-        <h1>Log In</h1>
-
-        {% if message %}
-            <p class="error">{{ message }}</p>
-        {% endif %}
-        <div class="form-group">
-            <p class="field-label">
-                Username
-            </p>
-            <input type="text" name="username" id="username">
-        </div>
-
-        <div class="form-group">
-            <p class="field-label">
-                Password
-            </p>
-            <input type="password" name="password" id="password">
-        </div>
-
-        <input type="submit" value="Log In">
-
-        <p class="dont-have">
-            Don't have an account? <a href="{% url 'accounts:register' %}">Register here.</a>
-        </p>
-    </form>
-
-    
-{% endblock %}
+{% block title %}Log in - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<h1>Log in</h1>
+<form method="post" class="form">
+    {% csrf_token %}
+    {% if message %}<p class="error">{{ message }}</p>{% endif %}
+    <div class="field">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" autofocus>
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+    </div>
+    <button type="submit" class="button">Log in</button>
+    <p class="muted">No account? <a href="{% url 'accounts:register' %}">Create one</a>.</p>
+</form>
+{% endblock content %}

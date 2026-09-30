@@ -1,0 +1,9 @@
+<div class="card">
+    <span class="tag">{{ project.get_status_display }}</span>
+    <h3>{% if project.link %}<a href="{{ project.link }}" target="_blank" rel="noopener">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}</h3>
+    <p>{{ project.summary }}</p>
+    {% if project.lead %}<p class="muted">Led by {{ project.lead }}</p>{% endif %}
+    {% if project.next_step %}
+        <p class="muted">Next: {{ project.next_step }}{% if project.next_step_date %} (by {{ project.next_step_date|date:"M j" }}){% endif %}</p>
+    {% endif %}
+</div>

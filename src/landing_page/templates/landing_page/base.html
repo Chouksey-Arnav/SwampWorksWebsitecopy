@@ -3,17 +3,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static 'landing_page/images/favicon.png' %}" type="image/x-icon">
-    <link rel="stylesheet" href="{% static 'landing_page/css/reset.css' %}">
-    <link rel="stylesheet" href="{% static 'landing_page/css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'landing_page/css/index.css' %}">
-    <title>django template</title>
+    <link rel="stylesheet" href="{% static 'landing_page/css/site.css' %}">
+    <title>{% block title %}{{ CLUB_NAME }}{% endblock %}</title>
 </head>
 <body>
     {% include 'partials/navbar.html' %}
-    {% block content %}
-    {% endblock content %}
+    <main class="container">
+        {% for message in messages %}
+            <p class="alert">{{ message }}</p>
+        {% endfor %}
+        {% block content %}{% endblock content %}
+    </main>
+    <footer class="footer">
+        <div class="container">
+            {{ CLUB_NAME }} &middot; {{ CLUB_SCHOOL }} &middot;
+            <a href="mailto:{{ CLUB_EMAIL }}">{{ CLUB_EMAIL }}</a>
+        </div>
+    </footer>
 </body>
 </html>
