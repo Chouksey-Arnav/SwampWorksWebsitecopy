@@ -1,5 +1,5 @@
 Django>=5.0.14
-python-dotenv==1.0.1
+dj-database-url==2.3.0
 psycopg2-binary==2.9.10
-django-storages==1.14.4
-boto3==1.35.74
+python-dotenv==1.0.1
+whitenoise==6.9.0
