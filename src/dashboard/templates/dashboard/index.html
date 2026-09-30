@@ -1,27 +1,29 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
-
-
+{% block title %}Dashboard - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
+<h1>Hi, {{ request.user.username }}</h1>
+<p class="lead">Welcome to the member area.</p>
 
-<h1>Hi there, <strong>{{request.user}}</strong>. Welcome to the dashboard</h1>
-
-This is a blank dashboard page which inherits from dashboard/base.html. It has seperate CSS from the landing page and is located at <strong>dashboard/static/dashboard/css/dashboard.css</strong>
-
-<p><strong style="color:red;">Note: this page is login restricted and can only be accessed by logged in users.</strong></p>
-
-<h2>Instructions</h2>
-
-<ol>
-    <li>
-        There is one CSS file in this app - <strong>dashboard.css</strong>. Feel free to replace this CSS with your own custom CSS
-    </li>
-</ol>
-
-<p>To log out, click <a href="{% url 'accounts:logout' %}">here</a></p>
-
-
+<div class="grid">
+    <div class="card">
+        <h3>Next meeting</h3>
+        {% if next_meeting %}
+            <p>{{ next_meeting.date|date:"l, F j" }} at {{ next_meeting.date|time:"g:i A" }}{% if next_meeting.location %} &middot; {{ next_meeting.location }}{% endif %}</p>
+        {% else %}
+            <p class="muted">Nothing posted yet.</p>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h3>Have an idea?</h3>
+        <p><a href="{% url 'landing_page:ideas' %}">Submit a project idea</a></p>
+    </div>
+    {% if request.user.is_staff %}
+    <div class="card">
+        <h3>Officer tools</h3>
+        <p><a href="/admin/landing_page/joinrequest/">{{ join_count }} sign-up{{ join_count|pluralize }}</a></p>
+        <p><a href="/admin/landing_page/projectidea/">{{ idea_count }} idea{{ idea_count|pluralize }}</a></p>
+        <p><a href="/admin/">Manage projects &amp; meetings</a></p>
+    </div>
+    {% endif %}
+</div>
 {% endblock content %}
-
-
-

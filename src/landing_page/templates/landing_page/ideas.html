@@ -1,0 +1,11 @@
+{% extends 'landing_page/base.html' %}
+{% block title %}Ideas - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<h1>Submit a project idea</h1>
+<p>Have something the club could build, or a problem at school or in the community that tech could fix? Tell us.</p>
+<form method="post" class="form">
+    {% csrf_token %}
+    {% include 'partials/form_fields.html' %}
+    <button type="submit" class="button">Submit idea</button>
+</form>
+{% endblock content %}

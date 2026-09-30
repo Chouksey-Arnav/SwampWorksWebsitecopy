@@ -1,4 +1,23 @@
 {% extends 'landing_page/base.html' %}
-{% load static %}
+{% block title %}About - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
+<h1>Why an IT service club?</h1>
+<p class="lead">We build real tech for real people at {{ CLUB_SCHOOL }} and our community.</p>
+
+<div class="grid">
+    <div class="card">
+        <h3>Build real projects</h3>
+        <p>Websites, tools, and fixes that people actually use, not just class assignments.</p>
+    </div>
+    <div class="card">
+        <h3>Show your skills</h3>
+        <p>Every project ends up on this site, so your work is easy to point to on a college or job application.</p>
+    </div>
+    <div class="card">
+        <h3>Help others</h3>
+        <p>Teachers, students, and local groups bring us problems. We figure out how to solve them.</p>
+    </div>
+</div>
+
+<p><a href="{% url 'landing_page:contact' %}" class="button">Join the club</a></p>
 {% endblock content %}

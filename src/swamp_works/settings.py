@@ -29,12 +29,24 @@ NPM_BIN_PATH = which('npm')
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-25(@rn#gehs9i^-a9(v2m2$%bio6&r%%mx@2&=9m9r-wixk)6$')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() != 'false'
 
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if not DEBUG:
+        raise RuntimeError('SECRET_KEY must be set when DEBUG is off')
+    SECRET_KEY = 'dev-only-insecure-key'
+
+# Comma-separated list, e.g. ALLOWED_HOSTS=swampworks.example.com
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h.strip()]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
+
+# Club info shown across the site
+CLUB_NAME = 'Swamp Works'
+CLUB_SCHOOL = 'GLHS'
+CLUB_TAGLINE = 'The IT service club that builds real tech for our school and community.'
+CLUB_EMAIL = os.getenv('CLUB_EMAIL', 'swampworks@example.com')
 
 
 # Application definition
@@ -75,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'landing_page.context_processors.club',
             ],
         },
     },
@@ -145,6 +158,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Email: prints to the terminal in development. Set EMAIL_HOST etc. in .env for real sending.
+if DEBUG or not os.getenv('EMAIL_HOST'):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_HOST = os.getenv('EMAIL_HOST')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', CLUB_EMAIL)
+LOGIN_URL = 'accounts:login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

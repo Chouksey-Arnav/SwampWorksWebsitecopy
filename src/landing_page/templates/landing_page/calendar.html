@@ -1,0 +1,24 @@
+{% extends 'landing_page/base.html' %}
+{% block title %}Calendar - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<h1>Club meetings</h1>
+{% for meeting in upcoming %}
+    <div class="card">
+        <strong>{{ meeting.title }}</strong><br>
+        {{ meeting.date|date:"l, F j, Y" }} at {{ meeting.date|time:"g:i A" }}
+        {% if meeting.location %}&middot; {{ meeting.location }}{% endif %}
+        {% if meeting.notes %}<p class="muted">{{ meeting.notes }}</p>{% endif %}
+    </div>
+{% empty %}
+    <p class="muted">No upcoming meetings posted yet.</p>
+{% endfor %}
+
+{% if past %}
+    <h2>Past meetings</h2>
+    <ul class="muted">
+        {% for meeting in past %}
+            <li>{{ meeting.date|date:"M j, Y" }} &ndash; {{ meeting.title }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock content %}
