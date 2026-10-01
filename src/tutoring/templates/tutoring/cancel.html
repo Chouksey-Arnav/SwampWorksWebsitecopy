@@ -1,0 +1,27 @@
+{% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}Cancel session - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="narrow">
+    <a class="crumb" href="{% url 'tutoring:session' booking.pk %}"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>Back to session</a>
+    <div class="card card-pad">
+        {% if problem %}
+            <h1 style="font-size:1.5rem">You can't cancel this one</h1>
+            <p class="alert warning" style="margin-top:14px"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>{{ problem }}</span></p>
+            <a class="btn btn-primary" href="{% url 'tutoring:session' booking.pk %}">Message {{ other_name }}</a>
+        {% else %}
+            <h1 style="font-size:1.5rem">Cancel this session?</h1>
+            <dl class="summary-list" style="margin:16px 0">
+                <div><dt><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>With</dt><dd>{{ other_name }}</dd></div>
+                <div><dt><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>When</dt><dd>{{ booking.start|date:"l, F j" }} at {{ booking.start|clock }} {{ booking.start|date:"T" }}</dd></div>
+            </dl>
+            <p class="muted">{{ other_name }} will be told by email. The chat becomes read-only.</p>
+            <form method="post" class="row" data-once style="margin-top:20px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger-solid">Yes, cancel session</button>
+                <a class="btn btn-secondary" href="{% url 'tutoring:session' booking.pk %}">Keep it</a>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

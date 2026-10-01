@@ -3,11 +3,12 @@ name = "swamp-works"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "Django>=5.0.14",
+    "Django>=5.2.0",
     "dj-database-url==2.3.0",
     "psycopg2-binary==2.9.10",
     "python-dotenv==1.0.1",
     "whitenoise==6.9.0",
+    "tzdata==2025.2",
 ]
 
 [tool.vercel]

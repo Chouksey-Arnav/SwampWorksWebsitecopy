@@ -1,0 +1,27 @@
+{% load tutoring_tags %}
+<article class="card card-link tutor-card">
+    <div class="tutor-card-top">
+        <span class="avatar lg" style="--h: {{ t.display_name|hue }}" aria-hidden="true">{{ t.initials }}</span>
+        <div class="grow">
+            <h3><a class="stretched" href="{% url 'tutoring:profile' t.pk %}">{{ t.display_name }}</a></h3>
+            {% if t.grade_label %}<p class="muted small">{{ t.grade_label }}</p>{% endif %}
+        </div>
+    </div>
+    <p class="tutor-headline">{{ t.headline }}</p>
+    {% with subjects=t.subjects.all %}
+    {% if subjects %}
+        <ul class="tag-list" aria-label="Subjects">
+            {% for s in subjects|slice:":3" %}<li class="tag">{{ s.name }}</li>{% endfor %}
+            {% if subjects|length > 3 %}<li class="pill">+{{ subjects|length|add:"-3" }} more</li>{% endif %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    <div class="tutor-card-foot">
+        {% if t.next_open %}
+            <span class="avail"><span class="dot" aria-hidden="true"></span>Next: <strong>{{ t.next_open|friendly_day }}, {{ t.next_open|clock }}</strong></span>
+            <span class="muted small nowrap">{{ t.open_count }} open</span>
+        {% else %}
+            <span class="avail off"><span class="dot dot-off" aria-hidden="true"></span>No open times right now</span>
+        {% endif %}
+    </div>
+</article>

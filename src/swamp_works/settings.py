@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 
 from pathlib import Path
 import dj_database_url
@@ -49,12 +50,22 @@ CLUB_SCHOOL = 'GLHS'
 CLUB_TAGLINE = 'The IT service club that builds real tech for our school and community.'
 CLUB_EMAIL = os.getenv('CLUB_EMAIL', 'swampworks@example.com')
 
+# Peer tutoring. Every value can be overridden from the environment.
+TUTORING_CHAT_ENABLED = os.getenv('TUTORING_CHAT_ENABLED', 'True').lower() != 'false'  # kill switch
+TUTORING_MIN_NOTICE_HOURS = int(os.getenv('TUTORING_MIN_NOTICE_HOURS', '2'))      # earliest bookable slot
+TUTORING_CANCEL_NOTICE_HOURS = int(os.getenv('TUTORING_CANCEL_NOTICE_HOURS', '2'))  # students can't cancel later
+TUTORING_BOOKING_HORIZON_DAYS = int(os.getenv('TUTORING_BOOKING_HORIZON_DAYS', '21'))
+TUTORING_MAX_UPCOMING_PER_STUDENT = int(os.getenv('TUTORING_MAX_UPCOMING_PER_STUDENT', '4'))
+TUTORING_CHAT_CLOSES_AFTER_DAYS = int(os.getenv('TUTORING_CHAT_CLOSES_AFTER_DAYS', '7'))
+TUTORING_MESSAGE_LIMIT = (10, 60)  # at most 10 messages per 60 seconds, per sender
+
 
 # Application definition
 
 INSTALLED_APPS = [
     'accounts',
     'landing_page',
+    'tutoring',
     'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -89,6 +100,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'landing_page.context_processors.club',
+                'tutoring.context_processors.tutoring',
             ],
         },
     },
@@ -143,7 +155,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# Slot and meeting times are shown in this zone. Set TIME_ZONE in the environment if the school is elsewhere.
+TIME_ZONE = os.getenv('TIME_ZONE', 'America/New_York')
 
 USE_I18N = True
 
@@ -180,3 +193,6 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+if 'test' in sys.argv:
+    PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # tests create many users; keep them fast

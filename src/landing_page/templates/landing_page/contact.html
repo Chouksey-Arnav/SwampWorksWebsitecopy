@@ -1,11 +1,13 @@
 {% extends 'landing_page/base.html' %}
 {% block title %}Join - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Join the club</h1>
-<p>Fill this out and we'll email you the details for the next new members meeting.</p>
-<form method="post" class="form">
-    {% csrf_token %}
-    {% include 'partials/form_fields.html' %}
-    <button type="submit" class="button">Sign up</button>
-</form>
+<div class="narrow">
+    <div class="page-head"><p class="eyebrow">Join the club</p><h1>Come build with us</h1><p>Fill this out and we'll email you the details for the next new members meeting. Want to tutor? Say what you can teach in the message.</p></div>
+    <form method="post" class="card card-pad form" data-once style="max-width:none">
+        {% csrf_token %}
+        {% include 'partials/form_fields.html' %}
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Sign up</button>
+    </form>
+    <p class="muted small" style="margin-top:14px">This is for joining the club. To book a tutor, <a href="{% url 'accounts:register' %}">create an account</a>.</p>
+</div>
 {% endblock content %}

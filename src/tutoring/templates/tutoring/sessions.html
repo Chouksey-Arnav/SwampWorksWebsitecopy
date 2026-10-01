@@ -1,0 +1,67 @@
+{% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}My sessions - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head row spread">
+    <div>
+        <h1>My sessions</h1>
+        <p>{% if is_tutor %}Sessions you're taking and sessions you're teaching, in one place.{% else %}Everything you've booked, with a chat for each one.{% endif %}</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'tutoring:directory' %}"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Find a tutor</a>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Session filter">
+    <a role="tab" class="tab{% if tab == 'upcoming' %} is-active{% endif %}" aria-selected="{% if tab == 'upcoming' %}true{% else %}false{% endif %}" href="?tab=upcoming">Upcoming <span class="tab-count">{{ counts.upcoming }}</span></a>
+    <a role="tab" class="tab{% if tab == 'past' %} is-active{% endif %}" aria-selected="{% if tab == 'past' %}true{% else %}false{% endif %}" href="?tab=past">Past <span class="tab-count">{{ counts.past }}</span></a>
+    <a role="tab" class="tab{% if tab == 'cancelled' %} is-active{% endif %}" aria-selected="{% if tab == 'cancelled' %}true{% else %}false{% endif %}" href="?tab=cancelled">Cancelled <span class="tab-count">{{ counts.cancelled }}</span></a>
+</div>
+
+{% if items %}
+<ul class="session-list" role="tabpanel">
+    {% for b in items %}
+    <li class="card card-link session-row{% if tab == 'cancelled' %} is-cancelled{% endif %}">
+        <div class="datebox{% if tab != 'upcoming' %} soft{% endif %}" aria-hidden="true">
+            <span class="m">{{ b.start|date:"M" }}</span><span class="d">{{ b.start|date:"j" }}</span>
+        </div>
+        <div class="grow">
+            <h3><a class="stretched" href="{% url 'tutoring:session' b.pk %}">{% if b.subject %}{{ b.subject.name }}{% else %}Tutoring{% endif %} with {{ b.other_name }}</a></h3>
+            <p class="meta">
+                <span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-clock"/></svg>{{ b.start|friendly_day }}, {{ b.start|clock }} to {{ b.end|clock }} {{ b.start|date:"T" }}</span>
+                <span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-pin"/></svg>{{ b.tutor.location }}</span>
+            </p>
+            <p class="row" style="gap:6px;margin:6px 0 0">
+                {% if b.is_in_progress %}<span class="pill pill-live"><span class="dot" aria-hidden="true"></span>In progress</span>{% endif %}
+                {% if b.role == 'tutor' %}<span class="pill">You're tutoring</span>{% endif %}
+                {% if tab == 'cancelled' %}<span class="pill pill-danger">Cancelled{% if b.cancelled_by_id == request.user.pk %} by you{% else %} by {{ b.other_name }}{% endif %}</span>{% endif %}
+            </p>
+        </div>
+        <div class="session-actions">
+            {% if b.unread %}<span class="badge" aria-label="{{ b.unread }} unread message{{ b.unread|pluralize }}">{{ b.unread }}</span>{% endif %}
+            {% if tab == 'cancelled' %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'tutoring:session' b.pk %}">Details</a>
+            {% else %}
+                <a class="btn btn-secondary btn-sm" href="{% url 'tutoring:session' b.pk %}"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-message"/></svg>Chat</a>
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+    <div class="empty">
+        {% if tab == 'upcoming' %}
+            <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div>
+            <h3>Nothing booked yet</h3>
+            <p>Find a tutor, pick a time that works, and it will show up here with a chat ready to go.</p>
+            <a class="btn btn-primary" href="{% url 'tutoring:directory' %}">Find a tutor</a>
+        {% elif tab == 'past' %}
+            <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></div>
+            <h3>No past sessions</h3>
+            <p>Sessions you've finished will be listed here.</p>
+        {% else %}
+            <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg></div>
+            <h3>No cancelled sessions</h3>
+            <p>Nothing here. That's a good thing.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock content %}

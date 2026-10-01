@@ -1,26 +1,27 @@
-{% load static %}
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{% static 'landing_page/images/favicon.png' %}" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="{% block description %}{{ CLUB_TAGLINE }}{% endblock %}">
+    <meta name="theme-color" content="#0a3a2a">
+    <link rel="icon" href="{% static 'landing_page/images/favicon.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'landing_page/css/site.css' %}">
+    <link rel="stylesheet" href="{% static 'tutoring/tutoring.css' %}">
     <title>{% block title %}{{ CLUB_NAME }}{% endblock %}</title>
+    {% block head %}{% endblock %}
 </head>
-<body>
-    {% include 'partials/navbar.html' %}
-    <main class="container">
-        {% for message in messages %}
-            <p class="alert">{{ message }}</p>
-        {% endfor %}
+<body class="{% block body_class %}{% endblock %}">
+    <a class="skip" href="#main">Skip to content</a>
+    {% include 'partials/icons.html' %}
+    {% include 'partials/header.html' %}
+    {% include 'partials/messages.html' %}
+    <main id="main" class="{% block main_class %}container page{% endblock %}">
         {% block content %}{% endblock content %}
     </main>
-    <footer class="footer">
-        <div class="container">
-            {{ CLUB_NAME }} &middot; {{ CLUB_SCHOOL }} &middot;
-            <a href="mailto:{{ CLUB_EMAIL }}">{{ CLUB_EMAIL }}</a>
-        </div>
-    </footer>
+    {% block footer %}{% include 'partials/footer.html' %}{% endblock %}
+    {% include 'partials/tabbar.html' %}
+    <script src="{% static 'landing_page/js/app.js' %}" defer></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

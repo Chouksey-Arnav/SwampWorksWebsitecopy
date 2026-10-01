@@ -1,24 +1,26 @@
 {% extends 'landing_page/base.html' %}
-{% block title %}Calendar - {{ CLUB_NAME }}{% endblock %}
+{% load tutoring_tags %}
+{% block title %}Meetings - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Club meetings</h1>
+<div class="page-head"><h1>Club meetings</h1><p>Come to one. New people are always welcome.</p></div>
+<div class="narrow-list stack" style="--gap:12px;max-width:760px">
 {% for meeting in upcoming %}
-    <div class="card">
-        <strong>{{ meeting.title }}</strong><br>
-        {{ meeting.date|date:"l, F j, Y" }} at {{ meeting.date|time:"g:i A" }}
-        {% if meeting.location %}&middot; {{ meeting.location }}{% endif %}
-        {% if meeting.notes %}<p class="muted">{{ meeting.notes }}</p>{% endif %}
-    </div>
+    <article class="card meeting">
+        <div class="datebox" aria-hidden="true"><span class="m">{{ meeting.date|date:"M" }}</span><span class="d">{{ meeting.date|date:"j" }}</span></div>
+        <div>
+            <h3>{{ meeting.title }}</h3>
+            <p class="meta" style="margin:0">{{ meeting.date|date:"l, F j" }} at {{ meeting.date|clock }} {{ meeting.date|date:"T" }}{% if meeting.location %} &middot; {{ meeting.location }}{% endif %}</p>
+            {% if meeting.notes %}<p class="notes">{{ meeting.notes }}</p>{% endif %}
+        </div>
+    </article>
 {% empty %}
-    <p class="muted">No upcoming meetings posted yet.</p>
+    <div class="empty"><div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>No upcoming meetings posted</h3><p>Join the club and we'll email you as soon as the next one is set.</p><a class="btn btn-primary" href="{% url 'landing_page:contact' %}">Join the club</a></div>
 {% endfor %}
-
+</div>
 {% if past %}
-    <h2>Past meetings</h2>
-    <ul class="muted">
-        {% for meeting in past %}
-            <li>{{ meeting.date|date:"M j, Y" }} &ndash; {{ meeting.title }}</li>
-        {% endfor %}
+    <h2 style="margin:40px 0 12px">Past meetings</h2>
+    <ul class="timeline" style="max-width:760px">
+        {% for meeting in past %}<li><time datetime="{{ meeting.date|date:'c' }}">{{ meeting.date|date:"M j, Y" }}</time><span>{{ meeting.title }}</span></li>{% endfor %}
     </ul>
 {% endif %}
 {% endblock content %}

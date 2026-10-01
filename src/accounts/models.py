@@ -1,6 +1,8 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+
 class User(AbstractUser):
-    pass
+    @property
+    def display_name(self):
+        """What other people see. First name if given, else username. Never the email."""
+        return self.first_name.strip() or self.username

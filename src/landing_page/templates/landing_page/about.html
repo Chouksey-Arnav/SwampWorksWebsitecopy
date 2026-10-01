@@ -1,23 +1,14 @@
 {% extends 'landing_page/base.html' %}
 {% block title %}About - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Why an IT service club?</h1>
-<p class="lead">We build real tech for real people at {{ CLUB_SCHOOL }} and our community.</p>
-
-<div class="grid">
-    <div class="card">
-        <h3>Build real projects</h3>
-        <p>Websites, tools, and fixes that people actually use, not just class assignments.</p>
-    </div>
-    <div class="card">
-        <h3>Show your skills</h3>
-        <p>Every project ends up on this site, so your work is easy to point to on a college or job application.</p>
-    </div>
-    <div class="card">
-        <h3>Help others</h3>
-        <p>Teachers, students, and local groups bring us problems. We figure out how to solve them.</p>
-    </div>
+<div class="page-head"><p class="eyebrow">About us</p><h1>Why an IT service club?</h1><p>We build real tech for real people at {{ CLUB_SCHOOL }} and our community, and we tutor each other along the way.</p></div>
+<div class="grid grid-3">
+    <div class="card feature"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></div><h3>Build real projects</h3><p>Websites, tools, and fixes that people actually use, not just class assignments.</p></div>
+    <div class="card feature"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></div><h3>Show your skills</h3><p>Every project ends up on this site, so your work is easy to point to on a college or job application.</p></div>
+    <div class="card feature"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Help others</h3><p>Teachers, students, and local groups bring us problems. Members also tutor classmates through this site.</p></div>
 </div>
-
-<p><a href="{% url 'landing_page:contact' %}" class="button">Join the club</a></p>
+<div class="cta-strip card card-pad">
+    <div class="grow"><h3>Join {{ CLUB_NAME }}</h3><p class="muted" style="margin:0">Whether you want to build, tutor, or just see what it's about.</p></div>
+    <a class="btn btn-primary" href="{% url 'landing_page:contact' %}">Join the club</a>
+</div>
 {% endblock content %}

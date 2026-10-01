@@ -1,0 +1,11 @@
+{% load tutoring_tags %}
+{% with label=d.first|friendly_day %}
+<div class="day-group">
+    <h3>{{ label }}{% if label == 'Today' or label == 'Tomorrow' %} <span class="muted small">{{ d.first|date:"D, M j" }}</span>{% endif %}</h3>
+    <ul class="slots">
+        {% for s in d.slots %}
+            <li><a class="slot" href="{% url 'tutoring:book' s.pk %}" aria-label="Book {{ label }} at {{ s.start|clock }}, {{ s.minutes|duration }}">{{ s.start|clock }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endwith %}
