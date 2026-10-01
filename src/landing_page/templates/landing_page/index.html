@@ -1,32 +1,93 @@
 {% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}{{ CLUB_NAME }} - student tutoring and tech club at {{ CLUB_SCHOOL }}{% endblock %}
+{% block main_class %}home{% endblock %}
 {% block content %}
-<section class="hero">
-    <h1>{{ CLUB_NAME }}</h1>
-    <p class="lead">{{ CLUB_TAGLINE }}</p>
-    <a href="{% url 'landing_page:contact' %}" class="button">Join the club</a>
-    <a href="{% url 'landing_page:about' %}" class="button outline">Why join?</a>
-</section>
-
-<section>
-    <h2>Next meeting</h2>
-    {% if next_meeting %}
-        <div class="card">
-            <strong>{{ next_meeting.title }}</strong><br>
-            {{ next_meeting.date|date:"l, F j" }} at {{ next_meeting.date|time:"g:i A" }}
-            {% if next_meeting.location %}&middot; {{ next_meeting.location }}{% endif %}
+<section class="hero" aria-labelledby="hero-title">
+    <div class="container hero-inner">
+        <div>
+            <p class="eyebrow"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-sparkle"/></svg>Student tutoring at {{ CLUB_SCHOOL }}</p>
+            <h1 id="hero-title">Get unstuck with a tutor who <em>gets it.</em></h1>
+            <p class="lead">Browse student tutors, grab a time that works, and chat before you meet. It takes about a minute.</p>
+            <form class="hero-search" action="{% url 'tutoring:directory' %}" method="get" role="search">
+                <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+                <input type="search" name="q" placeholder="What do you need help with?" aria-label="Search tutors by subject or name" autocomplete="off" maxlength="80">
+                <button type="submit" class="btn btn-primary">Find tutors</button>
+            </form>
+            {% if popular_subjects %}
+            <div class="hero-chips"><span>Popular:</span>
+                {% for s in popular_subjects %}<a href="{% url 'tutoring:directory' %}?subject={{ s.slug }}">{{ s.name }}</a>{% endfor %}
+            </div>
+            {% endif %}
         </div>
-    {% else %}
-        <p class="muted">The next meeting hasn't been posted yet. Check back soon.</p>
-    {% endif %}
+
+        <aside class="hero-panel" aria-labelledby="soon-title">
+            <h2 id="soon-title"><span class="dot" aria-hidden="true"></span>Open soon</h2>
+            {% if soon_tutors %}
+            <ul class="mini-tutors">
+                {% for t in soon_tutors %}
+                <li>
+                    <a class="mini-tutor" href="{% url 'tutoring:profile' t.pk %}">
+                        <span class="avatar" style="--h: {{ t.display_name|hue }}" aria-hidden="true">{{ t.initials }}</span>
+                        <span><strong>{{ t.display_name }}</strong><span class="sub">{{ t.headline|truncatechars:34 }}</span></span>
+                        <span class="when">{{ t.next_open|friendly_day }}<br>{{ t.next_open|clock }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-art">
+                <svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>
+                <strong>Tutors are joining soon</strong>
+                <span>Sign up now and you'll be ready the moment the first times open.</span>
+            </div>
+            {% endif %}
+        </aside>
+    </div>
 </section>
 
-<section>
-    <h2>What we're working on</h2>
-    {% for project in projects %}
-        {% include 'landing_page/_project.html' %}
-    {% empty %}
-        <p class="muted">Projects will show up here soon.</p>
-    {% endfor %}
-    <p><a href="{% url 'landing_page:projects' %}">See all projects &rarr;</a></p>
-</section>
+<div class="container">
+    <section class="section" aria-labelledby="how-title">
+        <div class="section-head"><div><p class="eyebrow">How it works</p><h2 id="how-title">From stuck to sorted in three steps</h2></div></div>
+        <ol class="how" style="list-style:none;padding:0;margin:0">
+            <li class="card how-step"><div class="num" aria-hidden="true">1</div><h3>Find a tutor</h3><p>Search by subject or browse everyone. Each profile shows what they teach and when they're free.</p></li>
+            <li class="card how-step"><div class="num" aria-hidden="true">2</div><h3>Pick a time</h3><p>Tap an open time and confirm. It's booked instantly, and you can cancel up to a couple of hours before.</p></li>
+            <li class="card how-step"><div class="num" aria-hidden="true">3</div><h3>Chat and meet</h3><p>Message your tutor about what you need. Officers can read chats, so everyone stays safe.</p></li>
+        </ol>
+    </section>
+
+    <section class="section" aria-labelledby="club-title">
+        <div class="section-head">
+            <div><p class="eyebrow">The club</p><h2 id="club-title">Built by students, for students</h2><p>{{ CLUB_NAME }} is the IT service club at {{ CLUB_SCHOOL }}. We tutor, and we build real tech for our school and community.</p></div>
+            <a class="btn btn-secondary" href="{% url 'landing_page:about' %}">About the club</a>
+        </div>
+        <div class="club-band">
+            <div class="stack" style="--gap:12px">
+                <h3>Next meeting</h3>
+                {% if next_meeting %}
+                    <div class="card meeting">
+                        <div class="datebox" aria-hidden="true"><span class="m">{{ next_meeting.date|date:"M" }}</span><span class="d">{{ next_meeting.date|date:"j" }}</span></div>
+                        <div><h3>{{ next_meeting.title }}</h3><p class="meta">{{ next_meeting.date|date:"l" }} at {{ next_meeting.date|clock }}{% if next_meeting.location %} &middot; {{ next_meeting.location }}{% endif %}</p></div>
+                    </div>
+                {% else %}
+                    <div class="card card-pad"><p class="muted" style="margin:0">The next meeting hasn't been posted yet. Check back soon.</p></div>
+                {% endif %}
+            </div>
+            <div class="stack" style="--gap:12px">
+                <h3>What we're building</h3>
+                {% for project in projects|slice:":2" %}
+                    {% include 'landing_page/_project.html' %}
+                {% empty %}
+                    <div class="card card-pad"><p class="muted" style="margin:0">Projects will show up here soon.</p></div>
+                {% endfor %}
+                <a href="{% url 'landing_page:projects' %}">See all projects &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-cta" aria-labelledby="cta-title">
+        <div><h2 id="cta-title">Want to tutor, or build things with us?</h2><p>Join {{ CLUB_NAME }}. Tell us what you're good at and we'll find the right spot for you.</p></div>
+        <a class="btn btn-primary btn-lg" href="{% url 'landing_page:contact' %}">Join the club</a>
+    </section>
+</div>
 {% endblock content %}

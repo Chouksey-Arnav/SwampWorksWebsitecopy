@@ -1,0 +1,11 @@
+{% if messages %}
+<div class="container flash" role="region" aria-label="Notifications">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}" role="{% if message.level >= 40 %}alert{% else %}status{% endif %}">
+            <svg class="icon" aria-hidden="true"><use href="#{% if message.level >= 40 %}i-alert{% else %}i-check-circle{% endif %}"/></svg>
+            <span>{{ message }}</span>
+            <button type="button" class="alert-close" data-dismiss aria-label="Dismiss"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,19 +1,35 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Log in - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Log in</h1>
-<form method="post" class="form">
-    {% csrf_token %}
-    {% if message %}<p class="error">{{ message }}</p>{% endif %}
-    <div class="field">
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username" autofocus>
+<div class="auth">
+    <aside class="auth-aside" aria-hidden="true">
+        <h2>Help is a few taps away.</h2>
+        <ul>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span><strong>Find the right tutor</strong>Search by subject and see who's free.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span><strong>Book in seconds</strong>Confirmed instantly, with a reminder in your inbox.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg><span><strong>Chat before you meet</strong>Tell your tutor what you're stuck on.</span></li>
+        </ul>
+    </aside>
+    <div class="auth-main">
+        <div class="auth-card">
+            <h1>Welcome back</h1>
+            <p class="muted">Log in to see your sessions and messages.</p>
+            <form method="post" class="form" data-once>
+                {% csrf_token %}
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                {% if message %}<div class="alert error" role="alert"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>{{ message }}</span></div>{% endif %}
+                <div class="field" style="margin-top:16px">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" value="{{ username|default:'' }}" autocomplete="username" autocapitalize="none" spellcheck="false" required{% if not message %} autofocus{% endif %}>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" autocomplete="current-password" required{% if message %} autofocus{% endif %}>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Log in</button>
+            </form>
+            <p class="auth-switch">New here? <a href="{% url 'accounts:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Create an account</a></p>
+        </div>
     </div>
-    <div class="field">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password">
-    </div>
-    <button type="submit" class="button">Log in</button>
-    <p class="muted">No account? <a href="{% url 'accounts:register' %}">Create one</a>.</p>
-</form>
+</div>
 {% endblock content %}

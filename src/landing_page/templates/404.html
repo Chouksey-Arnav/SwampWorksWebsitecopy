@@ -1,0 +1,11 @@
+{% extends 'landing_page/base.html' %}
+{% block title %}Page not found - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="empty" style="margin-top:40px">
+    <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></div>
+    <h1 style="font-size:1.6rem">We can't find that page</h1>
+    <p>It may have moved, or the link is wrong. If you were looking at a session, it might not be yours.</p>
+    <a class="btn btn-primary" href="{% url 'landing_page:index' %}">Go home</a>
+    <a class="btn btn-secondary" href="{% url 'tutoring:directory' %}">Find a tutor</a>
+</div>
+{% endblock content %}

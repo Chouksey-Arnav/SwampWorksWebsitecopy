@@ -1,9 +1,6 @@
-<div class="card">
-    <span class="tag">{{ project.get_status_display }}</span>
-    <h3>{% if project.link %}<a href="{{ project.link }}" target="_blank" rel="noopener">{{ project.title }}</a>{% else %}{{ project.title }}{% endif %}</h3>
+<article class="card project">
+    <div class="row spread" style="gap:8px"><span class="tag">{{ project.get_status_display }}</span>{% if project.lead %}<span class="muted small">Led by {{ project.lead }}</span>{% endif %}</div>
+    <h3>{% if project.link %}<a href="{{ project.link }}" target="_blank" rel="noopener noreferrer">{{ project.title }}<span class="sr-only"> (opens in a new tab)</span></a>{% else %}{{ project.title }}{% endif %}</h3>
     <p>{{ project.summary }}</p>
-    {% if project.lead %}<p class="muted">Led by {{ project.lead }}</p>{% endif %}
-    {% if project.next_step %}
-        <p class="muted">Next: {{ project.next_step }}{% if project.next_step_date %} (by {{ project.next_step_date|date:"M j" }}){% endif %}</p>
-    {% endif %}
-</div>
+    {% if project.next_step %}<p class="next"><strong>Next:</strong> <span>{{ project.next_step }}{% if project.next_step_date %} (by {{ project.next_step_date|date:"M j" }}){% endif %}</span></p>{% endif %}
+</article>

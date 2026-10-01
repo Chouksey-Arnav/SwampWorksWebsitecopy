@@ -1,11 +1,12 @@
 {% extends 'landing_page/base.html' %}
-{% block title %}Ideas - {{ CLUB_NAME }}{% endblock %}
+{% block title %}Share an idea - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Submit a project idea</h1>
-<p>Have something the club could build, or a problem at school or in the community that tech could fix? Tell us.</p>
-<form method="post" class="form">
-    {% csrf_token %}
-    {% include 'partials/form_fields.html' %}
-    <button type="submit" class="button">Submit idea</button>
-</form>
+<div class="narrow">
+    <div class="page-head"><p class="eyebrow">Ideas</p><h1>Submit a project idea</h1><p>Have something the club could build, or a problem at school or in the community that tech could fix? Tell us.</p></div>
+    <form method="post" class="card card-pad form" data-once style="max-width:none">
+        {% csrf_token %}
+        {% include 'partials/form_fields.html' %}
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Submit idea</button>
+    </form>
+</div>
 {% endblock content %}

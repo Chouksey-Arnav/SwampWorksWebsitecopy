@@ -1,0 +1,58 @@
+{% load tutoring_tags %}
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="brand" href="{% url 'landing_page:index' %}" aria-label="{{ CLUB_NAME }} home">
+            <svg class="icon brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
+            <span>{{ CLUB_NAME }}</span>
+        </a>
+
+        <nav class="primary-nav" aria-label="Main">
+            <a href="{% url 'tutoring:directory' %}"{% if NAV == 'tutors' %} aria-current="page"{% endif %}>Find a tutor</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tutoring:sessions' %}"{% if NAV == 'sessions' %} aria-current="page"{% endif %}>Sessions</a>
+                {% with unread=unread_messages %}
+                <a href="{% url 'tutoring:inbox' %}"{% if NAV == 'messages' %} aria-current="page"{% endif %}>
+                    Messages{% if unread %} <span class="badge" aria-label="{{ unread }} unread">{{ unread }}</span>{% endif %}
+                </a>
+                {% endwith %}
+            {% endif %}
+            <details class="menu{% if NAV == 'club' %} is-current{% endif %}">
+                <summary>Club <svg class="icon icon-sm icon-chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></summary>
+                <div class="menu-panel">
+                    <a href="{% url 'landing_page:about' %}"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg>About us</a>
+                    <a href="{% url 'landing_page:projects' %}"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Projects</a>
+                    <a href="{% url 'landing_page:calendar' %}"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Meetings</a>
+                    <a href="{% url 'landing_page:ideas' %}"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb"/></svg>Share an idea</a>
+                    <hr>
+                    <a href="{% url 'landing_page:contact' %}"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>Join the club</a>
+                </div>
+            </details>
+        </nav>
+
+        <div class="header-actions">
+            {% if user.is_authenticated %}
+                <details class="menu account-menu">
+                    <summary aria-label="Account menu">
+                        <span class="avatar sm" style="--h: {{ user.display_name|hue }}" aria-hidden="true">{{ user.display_name|initials_of }}</span>
+                    </summary>
+                    <div class="menu-panel right">
+                        <div class="who"><strong>{{ user.display_name }}</strong><span class="muted small">@{{ user.username }}</span></div>
+                        <hr>
+                        <a href="{% url 'dashboard:index' %}"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>Dashboard</a>
+                        <a href="{% url 'tutoring:sessions' %}"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>My sessions</a>
+                        <a href="{% url 'tutoring:inbox' %}"><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>Messages</a>
+                        {% if user.is_staff %}<a href="/admin/"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Officer admin</a>{% endif %}
+                        <hr>
+                        <form action="{% url 'accounts:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="link-button"><svg class="icon" aria-hidden="true"><use href="#i-logout"/></svg>Log out</button>
+                        </form>
+                    </div>
+                </details>
+            {% else %}
+                <a class="btn btn-ghost btn-sm" href="{% url 'accounts:login' %}">Log in</a>
+                <a class="btn btn-primary btn-sm" href="{% url 'accounts:register' %}">Sign up</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

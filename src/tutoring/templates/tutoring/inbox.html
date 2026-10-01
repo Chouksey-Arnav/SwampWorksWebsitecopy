@@ -1,0 +1,16 @@
+{% extends 'landing_page/base.html' %}
+{% block title %}Messages - {{ CLUB_NAME }}{% endblock %}
+{% block body_class %}body-messaging body-inbox{% endblock %}
+{% block main_class %}messaging{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div class="container-wide messaging-shell is-inbox">
+    <aside class="rail" aria-label="Conversations">{% include 'tutoring/_rail.html' %}</aside>
+    <section class="chat chat-placeholder" aria-label="No conversation selected">
+        <div class="empty-icon"><svg class="icon icon-lg" aria-hidden="true"><use href="#i-message"/></svg></div>
+        <h2>Pick a conversation</h2>
+        <p class="muted">Chats are tied to a booked session, so you always know who you're talking to and why.</p>
+        <a class="btn btn-secondary" href="{% url 'tutoring:directory' %}">Find a tutor</a>
+    </section>
+</div>
+{% endblock content %}

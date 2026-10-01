@@ -1,0 +1,29 @@
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="{% url 'landing_page:index' %}"><svg class="icon brand-mark" aria-hidden="true"><use href="#i-logo"/></svg><span>{{ CLUB_NAME }}</span></a>
+                <p class="muted" style="margin-top:12px;max-width:34ch">{{ CLUB_TAGLINE }}</p>
+                <p class="small"><a href="mailto:{{ CLUB_EMAIL }}">{{ CLUB_EMAIL }}</a></p>
+            </div>
+            <div>
+                <h2>Tutoring</h2>
+                <ul>
+                    <li><a href="{% url 'tutoring:directory' %}">Find a tutor</a></li>
+                    <li><a href="{% url 'tutoring:sessions' %}">My sessions</a></li>
+                    <li><a href="{% url 'tutoring:inbox' %}">Messages</a></li>
+                </ul>
+            </div>
+            <div>
+                <h2>The club</h2>
+                <ul>
+                    <li><a href="{% url 'landing_page:about' %}">About</a></li>
+                    <li><a href="{% url 'landing_page:projects' %}">Projects</a></li>
+                    <li><a href="{% url 'landing_page:calendar' %}">Meetings</a></li>
+                    <li><a href="{% url 'landing_page:contact' %}">Join us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-base">&copy; {% now "Y" %} {{ CLUB_NAME }} &middot; {{ CLUB_SCHOOL }}</div>
+    </div>
+</footer>

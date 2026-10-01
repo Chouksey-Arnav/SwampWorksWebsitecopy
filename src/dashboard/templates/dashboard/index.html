@@ -1,29 +1,98 @@
 {% extends 'dashboard/base.html' %}
+{% load tutoring_tags %}
 {% block title %}Dashboard - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Hi, {{ request.user.username }}</h1>
-<p class="lead">Welcome to the member area.</p>
+<div class="page-head">
+    <h1>Hi, {{ request.user.display_name }}</h1>
+    <p>{% if next_session %}Here's what's coming up.{% else %}Ready when you are.{% endif %}</p>
+</div>
 
-<div class="grid">
-    <div class="card">
-        <h3>Next meeting</h3>
-        {% if next_meeting %}
-            <p>{{ next_meeting.date|date:"l, F j" }} at {{ next_meeting.date|time:"g:i A" }}{% if next_meeting.location %} &middot; {{ next_meeting.location }}{% endif %}</p>
+<div class="dash-grid">
+    <div class="stack" style="--gap:20px">
+        {% if next_session %}
+        <section class="card upnext" aria-labelledby="upnext-title">
+            <p class="eyebrow">{% if next_session.is_in_progress %}Happening now{% else %}Up next{% endif %}</p>
+            <h2 id="upnext-title">{% if next_session.subject %}{{ next_session.subject.name }}{% else %}Tutoring{% endif %} with {{ next_session.other_name }}</h2>
+            <p class="when">{{ next_session.start|friendly_day }} at {{ next_session.start|clock }} {{ next_session.start|date:"T" }}</p>
+            <p class="where"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-pin"/></svg>{{ next_session.tutor.location }}</p>
+            <div class="row actions">
+                <a class="btn btn-primary" href="{% url 'tutoring:session' next_session.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>Open chat{% if next_session.unread %} ({{ next_session.unread }} new){% endif %}</a>
+                <a class="btn btn-secondary" href="{% url 'tutoring:calendar' next_session.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-calendar-plus"/></svg>Add to calendar</a>
+            </div>
+        </section>
         {% else %}
-            <p class="muted">Nothing posted yet.</p>
+        <section class="empty">
+            <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div>
+            <h3>No sessions booked</h3>
+            <p>Find a tutor and grab a time. It takes about a minute.</p>
+            <a class="btn btn-primary" href="{% url 'tutoring:directory' %}">Find a tutor</a>
+        </section>
+        {% endif %}
+
+        {% if later_sessions %}
+        <section class="card side-card" aria-labelledby="later-title">
+            <h3 id="later-title">Later</h3>
+            {% for b in later_sessions %}
+            <a class="session-mini" href="{% url 'tutoring:session' b.pk %}">
+                <span class="datebox soft" aria-hidden="true"><span class="m">{{ b.start|date:"M" }}</span><span class="d">{{ b.start|date:"j" }}</span></span>
+                <span><strong>{% if b.subject %}{{ b.subject.name }}{% else %}Tutoring{% endif %} with {{ b.other_name }}</strong><span class="sub">{{ b.start|friendly_day }}, {{ b.start|clock }}</span></span>
+                {% if b.unread %}<span class="badge" aria-label="{{ b.unread }} unread">{{ b.unread }}</span>{% endif %}
+            </a>
+            {% endfor %}
+            <p style="margin:10px 0 0"><a href="{% url 'tutoring:sessions' %}">All sessions &rarr;</a></p>
+        </section>
+        {% endif %}
+
+        {% if soon_tutors %}
+        <section class="card side-card" aria-labelledby="soon-title">
+            <h3 id="soon-title">Tutors with open times</h3>
+            <ul class="mini-list">
+                {% for t in soon_tutors %}
+                <li><a class="mini-tutor" href="{% url 'tutoring:profile' t.pk %}">
+                    <span class="avatar" style="--h: {{ t.display_name|hue }}" aria-hidden="true">{{ t.initials }}</span>
+                    <span><strong>{{ t.display_name }}</strong><span class="sub">{{ t.headline|truncatechars:40 }}</span></span>
+                    <span class="when">{{ t.next_open|friendly_day }}<br>{{ t.next_open|clock }}</span>
+                </a></li>
+                {% endfor %}
+            </ul>
+            <p style="margin:10px 0 0"><a href="{% url 'tutoring:directory' %}?open=1">See everyone with open times &rarr;</a></p>
+        </section>
         {% endif %}
     </div>
-    <div class="card">
-        <h3>Have an idea?</h3>
-        <p><a href="{% url 'landing_page:ideas' %}">Submit a project idea</a></p>
+
+    <div class="stack" style="--gap:20px">
+        <section class="card side-card" aria-labelledby="quick-title">
+            <h3 id="quick-title">Quick links</h3>
+            <nav class="quick" aria-label="Quick links">
+                <a href="{% url 'tutoring:directory' %}"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Find a tutor</a>
+                <a href="{% url 'tutoring:inbox' %}"><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>Messages{% if unread_total %}<span class="badge" aria-label="{{ unread_total }} unread">{{ unread_total }}</span>{% endif %}</a>
+                <a href="{% url 'tutoring:sessions' %}"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>My sessions</a>
+                <a href="{% url 'landing_page:ideas' %}"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb"/></svg>Share a project idea</a>
+            </nav>
+        </section>
+
+        <section class="card side-card" aria-labelledby="meet-title">
+            <h3 id="meet-title"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Next club meeting</h3>
+            {% if next_meeting %}
+                <p style="margin:0"><strong>{{ next_meeting.title }}</strong></p>
+                <p class="muted" style="margin:2px 0 0">{{ next_meeting.date|date:"l, F j" }} at {{ next_meeting.date|clock }}{% if next_meeting.location %} &middot; {{ next_meeting.location }}{% endif %}</p>
+            {% else %}
+                <p class="muted" style="margin:0">Nothing posted yet.</p>
+            {% endif %}
+        </section>
+
+        {% if request.user.is_staff %}
+        <section class="card side-card" aria-labelledby="officer-title">
+            <h3 id="officer-title"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Officer tools</h3>
+            <nav class="quick" aria-label="Officer tools">
+                <a href="/admin/landing_page/joinrequest/">{{ join_count }} sign-up{{ join_count|pluralize }}</a>
+                <a href="/admin/landing_page/projectidea/">{{ idea_count }} idea{{ idea_count|pluralize }}</a>
+                <a href="/admin/tutoring/tutorprofile/">Tutors &amp; times</a>
+                <a href="/admin/tutoring/report/">Chat reports</a>
+                <a href="/admin/">Manage projects &amp; meetings</a>
+            </nav>
+        </section>
+        {% endif %}
     </div>
-    {% if request.user.is_staff %}
-    <div class="card">
-        <h3>Officer tools</h3>
-        <p><a href="/admin/landing_page/joinrequest/">{{ join_count }} sign-up{{ join_count|pluralize }}</a></p>
-        <p><a href="/admin/landing_page/projectidea/">{{ idea_count }} idea{{ idea_count|pluralize }}</a></p>
-        <p><a href="/admin/">Manage projects &amp; meetings</a></p>
-    </div>
-    {% endif %}
 </div>
 {% endblock content %}

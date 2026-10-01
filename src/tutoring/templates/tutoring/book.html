@@ -1,0 +1,55 @@
+{% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}Confirm your session - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="container-narrow-in">
+    <a class="crumb" href="{% url 'tutoring:profile' tutor.pk %}"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>Pick a different time</a>
+
+    <ol class="stepper" aria-label="Booking steps">
+        <li class="done"><span>1</span> Pick a time</li>
+        <li class="current" aria-current="step"><span>2</span> Confirm</li>
+        <li><span>3</span> Chat</li>
+    </ol>
+
+    <div class="book-grid">
+        <section class="card card-pad" aria-labelledby="confirm-title">
+            <h1 id="confirm-title" style="font-size:1.6rem">Confirm your session</h1>
+            <p class="muted" style="margin-top:6px">Almost done. Tell {{ tutor.first_name }} what you need.</p>
+            <form method="post" class="form" data-once novalidate style="margin-top:22px;max-width:none">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="field{% if form.subject.errors %} has-error{% endif %}">
+                    <label for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
+                    {{ form.subject }}
+                    {% for e in form.subject.errors %}<p class="error">{{ e }}</p>{% endfor %}
+                </div>
+                <div class="field">
+                    <label for="{{ form.note.id_for_label }}">{{ form.note.label }}</label>
+                    <textarea name="note" id="{{ form.note.id_for_label }}" rows="3" maxlength="300" placeholder="e.g. Chapter 4 practice test, quadratics, essay thesis" data-counter="#note-count">{{ form.note.value|default:'' }}</textarea>
+                    <p class="counter" id="note-count" aria-live="off"></p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Confirm booking</button>
+                <p class="muted small" style="margin-top:12px;text-align:center">
+                    Free to cancel up to {{ cancel_hours }} hours before. Officers can read tutoring chats to keep everyone safe.
+                </p>
+            </form>
+        </section>
+
+        <aside class="card card-pad summary" aria-label="Session summary">
+            <div class="row" style="flex-wrap:nowrap">
+                <span class="avatar lg" style="--h: {{ tutor.display_name|hue }}" aria-hidden="true">{{ tutor.initials }}</span>
+                <div>
+                    <p class="eyebrow" style="margin:0">Your tutor</p>
+                    <h2 style="font-size:1.2rem"><a href="{% url 'tutoring:profile' tutor.pk %}" style="color:inherit;text-decoration:none">{{ tutor.display_name }}</a></h2>
+                    <p class="muted small" style="margin:0">{{ tutor.headline }}</p>
+                </div>
+            </div>
+            <dl class="summary-list">
+                <div><dt><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Date</dt><dd>{{ slot.start|date:"l, F j" }}</dd></div>
+                <div><dt><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Time</dt><dd>{{ slot.start|clock }} to {{ slot.end|clock }} {{ slot.start|date:"T" }} <span class="muted">({{ slot.minutes|duration }})</span></dd></div>
+                <div><dt><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Where</dt><dd>{{ tutor.location }}</dd></div>
+            </dl>
+        </aside>
+    </div>
+</div>
+{% endblock content %}
