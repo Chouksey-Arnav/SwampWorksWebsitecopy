@@ -250,7 +250,7 @@ def notify_report(report):
 # --- Calendar export --------------------------------------------------------
 
 def _ics_escape(text):
-    return (text.replace('\\', '\\\\').replace(';', '\;').replace(',', '\\,').replace('\r', '').replace('\n', '\\n'))
+    return text.replace('\\', '\\\\').replace(';', '\\;').replace(',', '\\,').replace('\r', '').replace('\n', '\\n')
 
 
 def _fold(line):

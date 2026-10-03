@@ -459,7 +459,7 @@ class CalendarFileTests(TestCase):
         self.assertTrue(body.startswith('BEGIN:VCALENDAR\r\n') and body.endswith('END:VCALENDAR\r\n'))
         self.assertIn(f'UID:booking-{booking.pk}@swampworks', body)
         self.assertRegex(body, r'DTSTART:\d{8}T\d{6}Z')
-        self.assertIn('Bring: notes\\, pen\;\\nand', body.replace('\r\n ', ''))
+        self.assertIn('Bring: notes\\, pen\\;\\nand', body.replace('\r\n ', ''))
         self.assertTrue(all(len(line.encode()) <= 75 for line in body.split('\r\n')))
 
     def test_cancelled_booking_has_no_calendar_file(self):
