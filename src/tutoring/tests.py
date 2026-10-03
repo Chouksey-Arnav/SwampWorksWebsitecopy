@@ -581,3 +581,36 @@ class SendDoesNotMarkReadTests(TestCase):
         services.post_message(booking, tutor.user, 'arrived while you were typing')
         services.post_message(booking, student, 'my reply')
         self.assertEqual(services.unread_map(student), {booking.pk: 1})
+
+
+from threading import Barrier, Thread  # noqa: E402
+
+from django.db import connection, connections  # noqa: E402
+from django.test import TransactionTestCase, skipUnlessDBFeature  # noqa: E402
+
+
+@skipUnlessDBFeature('has_select_for_update')
+class ConcurrentBookingTests(TransactionTestCase):
+    """Real parallel connections. Only meaningful on Postgres (SQLite serialises writers)."""
+
+    def test_ten_students_race_for_one_slot_and_exactly_one_wins(self):
+        tutor = make_tutor()
+        slot = make_slot(tutor)
+        students = [make_student(f's{i}') for i in range(10)]
+        gate, results = Barrier(len(students)), []
+
+        def attempt(student):
+            try:
+                gate.wait()
+                services.book_slot(student, slot.pk)
+                results.append('won')
+            except BookingError:
+                results.append('lost')
+            finally:
+                connections.close_all()
+
+        threads = [Thread(target=attempt, args=(s,)) for s in students]
+        [t.start() for t in threads]
+        [t.join() for t in threads]
+        self.assertEqual(sorted(results), ['lost'] * 9 + ['won'])
+        self.assertEqual(Booking.objects.filter(slot=slot, status=Booking.CONFIRMED).count(), 1)
