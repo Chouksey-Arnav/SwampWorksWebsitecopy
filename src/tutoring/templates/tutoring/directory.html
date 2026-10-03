@@ -1,0 +1,91 @@
+{% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}Find a tutor - {{ CLUB_NAME }}{% endblock %}
+{% block description %}Browse student tutors at {{ CLUB_SCHOOL }}, see when they're free, and book a session in two taps.{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h1>Find a tutor</h1>
+    <p>{% if total_tutors %}{{ total_tutors }} student tutor{{ total_tutors|pluralize }} at {{ CLUB_SCHOOL }}. Pick one, choose a time, and start chatting.{% else %}Student tutors at {{ CLUB_SCHOOL }} will show up here.{% endif %}</p>
+</div>
+
+<form class="filters card" method="get" role="search" aria-label="Search tutors">
+    <div class="search-box">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input type="search" name="q" value="{{ q }}" placeholder="Subject or name" aria-label="Search tutors" maxlength="80" autocomplete="off">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+    <div class="filters-row">
+        <label class="switch">
+            <input type="checkbox" name="open" value="1"{% if only_open %} checked{% endif %} data-autosubmit>
+            <span class="switch-ui" aria-hidden="true"></span>
+            <span>Open times</span>
+        </label>
+        <label class="select-inline">
+            <span class="muted small sort-label">Sort by</span>
+            <select name="sort" data-autosubmit aria-label="Sort tutors">
+                <option value="soonest"{% if sort == 'soonest' %} selected{% endif %}>Soonest</option>
+                <option value="name"{% if sort == 'name' %} selected{% endif %}>A to Z</option>
+            </select>
+        </label>
+    </div>
+    {% if active_subject %}<input type="hidden" name="subject" value="{{ active_subject.slug }}">{% endif %}
+</form>
+
+{% if subjects %}
+<div class="chips" role="group" aria-label="Filter by subject">
+    <a class="chip{% if not active_subject %} is-active{% endif %}" href="{% qs subject='' %}"{% if not active_subject %} aria-current="true"{% endif %}>All subjects</a>
+    {% for s in subjects %}
+        <a class="chip{% if s == active_subject %} is-active{% endif %}" href="{% qs subject=s.slug %}"{% if s == active_subject %} aria-current="true"{% endif %}>{{ s.name }} <span class="chip-count">{{ s.n }}</span></a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="results-bar">
+    <p class="muted" aria-live="polite">
+        {% if page.paginator.count %}Showing {{ page.start_index }}&ndash;{{ page.end_index }} of {{ page.paginator.count }} tutor{{ page.paginator.count|pluralize }}{% else %}No tutors found{% endif %}
+    </p>
+    {% if filtered %}
+    <ul class="active-filters" aria-label="Active filters">
+        {% if q %}<li><a class="pill" href="{% qs q='' %}">“{{ q }}” <svg class="icon icon-sm" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">Remove search</span></a></li>{% endif %}
+        {% if active_subject %}<li><a class="pill" href="{% qs subject='' %}">{{ active_subject.name }} <svg class="icon icon-sm" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">Remove subject filter</span></a></li>{% endif %}
+        {% if only_open %}<li><a class="pill" href="{% qs open='' %}">Open times <svg class="icon icon-sm" aria-hidden="true"><use href="#i-x"/></svg><span class="sr-only">Remove availability filter</span></a></li>{% endif %}
+        <li><a class="small" href="{% url 'tutoring:directory' %}">Clear all</a></li>
+    </ul>
+    {% endif %}
+</div>
+
+{% if page.object_list %}
+    <div class="grid grid-3">
+        {% for t in page.object_list %}{% include 'tutoring/_tutor_card.html' %}{% endfor %}
+    </div>
+    {% if page.has_other_pages %}
+    <nav class="pager" aria-label="Pages">
+        {% if page.has_previous %}<a class="btn btn-secondary btn-sm" href="{% qs page=page.previous_page_number %}" rel="prev"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>Previous</a>{% else %}<span></span>{% endif %}
+        <span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+        {% if page.has_next %}<a class="btn btn-secondary btn-sm" href="{% qs page=page.next_page_number %}" rel="next">Next<svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>{% else %}<span></span>{% endif %}
+    </nav>
+    {% endif %}
+{% elif filtered %}
+    <div class="empty">
+        <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></div>
+        <h3>No tutors match that</h3>
+        <p>Try a broader word, a different subject, or turn off the “Open times” filter.</p>
+        <a class="btn btn-primary" href="{% url 'tutoring:directory' %}">Clear filters</a>
+    </div>
+{% else %}
+    <div class="empty">
+        <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div>
+        <h3>Tutors are on their way</h3>
+        <p>Officers are approving the first tutors now. Check back soon, or join the club to become one.</p>
+        <a class="btn btn-primary" href="{% url 'landing_page:contact' %}">Join the club</a>
+    </div>
+{% endif %}
+
+<aside class="card card-pad cta-strip">
+    <div class="grow">
+        <h3>Good at something? Tutor with us.</h3>
+        <p class="muted" style="margin:0">Join {{ CLUB_NAME }}, tell us what you can teach, and officers will set you up.</p>
+    </div>
+    <a class="btn btn-secondary" href="{% url 'landing_page:contact' %}">Become a tutor</a>
+</aside>
+{% endblock content %}

@@ -1,0 +1,102 @@
+{% extends 'landing_page/base.html' %}
+{% load static tutoring_tags %}
+{% block title %}Chat with {{ other_name }} - {{ CLUB_NAME }}{% endblock %}
+{% block body_class %}body-chat body-messaging{% endblock %}
+{% block main_class %}messaging{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div class="container-wide messaging-shell">
+    <aside class="rail" aria-label="Conversations">{% include 'tutoring/_rail.html' %}</aside>
+
+    <section class="chat" aria-labelledby="chat-title">
+        <header class="chat-head">
+            <a class="icon-btn back" href="{% url 'tutoring:inbox' %}" aria-label="Back to all messages"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg></a>
+            <span class="avatar" style="--h: {{ other_name|hue }}" aria-hidden="true">{{ other_name|initials_of }}</span>
+            <div class="grow">
+                <h1 id="chat-title">{% if role == 'student' %}<a href="{% url 'tutoring:profile' booking.tutor.pk %}">{{ other_name }}</a>{% else %}{{ other_name }}{% endif %}</h1>
+                <p class="chat-sub">{% if booking.subject %}{{ booking.subject.name }} &middot; {% endif %}{{ booking.start|friendly_day }}, {{ booking.start|clock }}{% if not booking.is_confirmed %} &middot; Cancelled{% endif %}</p>
+            </div>
+            <a class="btn btn-secondary btn-sm details-open" href="#details">Details</a>
+        </header>
+
+        <p class="safety">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="#i-shield"/></svg>
+            <span><strong>Officers can read this chat.</strong> <span class="safety-more">Keep it about your session. Don't share phone numbers, addresses or passwords.</span></span>
+        </p>
+
+        <div id="thread" class="thread" role="log" aria-live="polite" aria-relevant="additions" aria-label="Messages with {{ other_name }}" tabindex="0"
+             data-poll-url="{% url 'tutoring:poll' booking.pk %}" data-send-url="{% url 'tutoring:send' booking.pk %}"
+             data-last-id="{{ last_id }}" data-status="{{ chat_status }}">
+            {% if thread %}
+                {% for m in thread %}
+                    {% ifchanged m.day_key %}<div class="day" data-day="{{ m.day_key }}"><span>{{ m.day_label }}</span></div>{% endifchanged %}
+                    <div class="msg {% if m.mine %}mine{% else %}theirs{% endif %}{% if m.removed %} removed{% endif %}" data-id="{{ m.id }}">
+                        <div class="bubble">{% if m.removed %}<em>Message removed by an officer</em>{% else %}<span class="text">{{ m.body|linebreaksbr }}</span>{% endif %}<time>{{ m.time }}</time></div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="thread-empty" id="thread-empty">
+                    <span class="avatar xl" style="--h: {{ other_name|hue }}" aria-hidden="true">{{ other_name|initials_of }}</span>
+                    <h2>{% if chat_status == 'open' %}Say hi to {{ other_name }}{% else %}No messages{% endif %}</h2>
+                    {% if chat_status == 'open' %}
+                        <p class="muted">{% if role == 'student' %}Tell them what you're stuck on so they can prepare.{% else %}Say hello and ask what they want to cover.{% endif %}</p>
+                        <div class="starters">
+                            {% if role == 'student' %}
+                                <button type="button" class="chip" data-starter="Hi {{ other_name }}! I'd like help with ">Hi! I'd like help with…</button>
+                                <button type="button" class="chip" data-starter="Is there anything I should bring or prepare?">What should I bring?</button>
+                            {% else %}
+                                <button type="button" class="chip" data-starter="Hi {{ other_name }}! What would you like to cover in our session?">What do you want to cover?</button>
+                                <button type="button" class="chip" data-starter="Looking forward to it. Bring any questions you have.">Looking forward to it</button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <button type="button" class="jump" id="jump" hidden>New messages <svg class="icon icon-sm" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+
+        {% if chat_status == 'open' %}
+        <form class="composer" id="composer" method="post" action="{% url 'tutoring:send' booking.pk %}">
+            {% csrf_token %}
+            <label for="body" class="sr-only">Message {{ other_name }}</label>
+            <textarea id="body" name="body" rows="1" maxlength="1000" placeholder="Message {{ other_name }}" required enterkeyhint="send" autocomplete="off"></textarea>
+            <button type="submit" class="btn btn-primary send" aria-label="Send message"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+        </form>
+        <p class="composer-note" id="composer-note" role="status" aria-live="polite"></p>
+        {% else %}
+        <p class="chat-closed" id="chat-closed"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-lock"/></svg>{{ chat_status_text }}</p>
+        {% endif %}
+    </section>
+
+    <aside class="details" id="details" aria-labelledby="details-title">
+        <div class="details-bar">
+            <h2 id="details-title">Session details</h2>
+            <a class="icon-btn" href="#thread" aria-label="Close details"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></a>
+        </div>
+        <dl class="summary-list">
+            <div><dt><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Date</dt><dd>{{ booking.start|date:"l, F j" }}</dd></div>
+            <div><dt><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Time</dt><dd>{{ booking.start|clock }} to {{ booking.end|clock }} {{ booking.start|date:"T" }}</dd></div>
+            <div><dt><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Where</dt><dd>{{ booking.tutor.location }}</dd></div>
+            <div><dt><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Topic</dt><dd>{% if booking.subject %}{{ booking.subject.name }}{% else %}General help{% endif %}</dd></div>
+            <div><dt><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>{% if role == 'student' %}Tutor{% else %}Student{% endif %}</dt><dd>{{ other_name }}</dd></div>
+        </dl>
+        {% if booking.note %}
+            <div class="note-box"><p class="eyebrow">{% if role == 'student' %}Your note{% else %}Their note{% endif %}</p><p>{{ booking.note|linebreaksbr }}</p></div>
+        {% endif %}
+        <div class="details-actions">
+            {% if booking.is_confirmed %}
+                <a class="btn btn-secondary btn-block" href="{% url 'tutoring:calendar' booking.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-calendar-plus"/></svg>Add to calendar</a>
+                {% if not cancel_problem %}
+                    <a class="btn btn-danger btn-block" href="{% url 'tutoring:cancel' booking.pk %}">Cancel session</a>
+                {% elif booking.is_upcoming %}
+                    <p class="muted small cancel-why"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-info"/></svg>{{ cancel_problem }}</p>
+                {% endif %}
+            {% else %}
+                <p class="pill pill-danger">Cancelled</p>
+            {% endif %}
+            <a class="btn btn-ghost btn-block" href="{% url 'tutoring:report' booking.pk %}"><svg class="icon" aria-hidden="true"><use href="#i-flag"/></svg>Report a problem</a>
+        </div>
+    </aside>
+</div>
+{% endblock content %}
+{% block scripts %}<script src="{% static 'tutoring/chat.js' %}" defer></script>{% endblock %}

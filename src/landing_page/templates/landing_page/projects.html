@@ -1,19 +1,18 @@
 {% extends 'landing_page/base.html' %}
 {% block title %}Projects - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Projects</h1>
-{% for project in active %}
-    {% include 'landing_page/_project.html' %}
-{% empty %}
-    <p class="muted">No active projects yet.</p>
-{% endfor %}
-
-{% if finished %}
-    <h2>Finished</h2>
-    {% for project in finished %}
-        {% include 'landing_page/_project.html' %}
-    {% endfor %}
+<div class="page-head"><h1>Projects</h1><p>What the club is building right now, and what we've shipped.</p></div>
+{% if active %}
+    <div class="grid grid-2">{% for project in active %}{% include 'landing_page/_project.html' %}{% endfor %}</div>
+{% else %}
+    <div class="empty"><div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></div><h3>No active projects yet</h3><p>Got an idea for the first one?</p><a class="btn btn-primary" href="{% url 'landing_page:ideas' %}">Share an idea</a></div>
 {% endif %}
-
-<p>Got an idea? <a href="{% url 'landing_page:ideas' %}">Submit it here</a>.</p>
+{% if finished %}
+    <h2 style="margin:40px 0 16px">Finished</h2>
+    <div class="grid grid-2">{% for project in finished %}{% include 'landing_page/_project.html' %}{% endfor %}</div>
+{% endif %}
+<div class="cta-strip card card-pad">
+    <div class="grow"><h3>Got an idea?</h3><p class="muted" style="margin:0">Tell us about a problem at school or in the community that tech could fix.</p></div>
+    <a class="btn btn-secondary" href="{% url 'landing_page:ideas' %}">Submit it here</a>
+</div>
 {% endblock content %}

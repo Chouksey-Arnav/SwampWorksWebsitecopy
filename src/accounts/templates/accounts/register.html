@@ -1,11 +1,27 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Create account - {{ CLUB_NAME }}{% endblock %}
 {% block content %}
-<h1>Create an account</h1>
-<form method="post" class="form">
-    {% csrf_token %}
-    {% include 'partials/form_fields.html' %}
-    <button type="submit" class="button">Create account</button>
-    <p class="muted">Already have one? <a href="{% url 'accounts:login' %}">Log in</a>.</p>
-</form>
+<div class="auth">
+    <aside class="auth-aside" aria-hidden="true">
+        <h2>One account. Every tutor.</h2>
+        <ul>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><span><strong>Safe by design</strong>Chats are tied to a booking and officers can read them.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span><strong>Your email stays private</strong>Tutors only see your first name or username.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span><strong>Cancel any time</strong>Up to a couple of hours before a session.</span></li>
+        </ul>
+    </aside>
+    <div class="auth-main">
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="muted">Takes about 30 seconds.</p>
+            <form method="post" class="form" data-once novalidate>
+                {% csrf_token %}
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                {% include 'partials/form_fields.html' %}
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Create account</button>
+            </form>
+            <p class="auth-switch">Already have one? <a href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in</a></p>
+        </div>
+    </div>
+</div>
 {% endblock content %}

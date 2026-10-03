@@ -1,0 +1,16 @@
+<nav class="tabbar" aria-label="Main">
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard:index' %}"{% if NAV == 'home' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+        <a href="{% url 'tutoring:directory' %}"{% if NAV == 'tutors' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Tutors</a>
+        <a href="{% url 'tutoring:sessions' %}"{% if NAV == 'sessions' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg>Sessions</a>
+        {% with unread=unread_messages %}
+        <a href="{% url 'tutoring:inbox' %}"{% if NAV == 'messages' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>Messages{% if unread %}<span class="badge" aria-label="{{ unread }} unread">{{ unread }}</span>{% endif %}</a>
+        {% endwith %}
+        <a href="{% url 'landing_page:club' %}"{% if NAV == 'club' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Club</a>
+    {% else %}
+        <a href="{% url 'landing_page:index' %}"{% if NAV == 'home' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+        <a href="{% url 'tutoring:directory' %}"{% if NAV == 'tutors' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>Tutors</a>
+        <a href="{% url 'landing_page:club' %}"{% if NAV == 'club' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Club</a>
+        <a href="{% url 'accounts:login' %}"{% if NAV == 'login' %} aria-current="page"{% endif %}><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>Log in</a>
+    {% endif %}
+</nav>

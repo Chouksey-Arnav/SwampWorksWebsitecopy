@@ -1,0 +1,86 @@
+{% extends 'landing_page/base.html' %}
+{% load tutoring_tags %}
+{% block title %}{{ tutor.display_name }}, tutor - {{ CLUB_NAME }}{% endblock %}
+{% block description %}{{ tutor.headline }}. Book a session with {{ tutor.display_name }}.{% endblock %}
+{% block content %}
+<a class="crumb" href="{% url 'tutoring:directory' %}"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow-left"/></svg>All tutors</a>
+
+{% if preview %}
+    <p class="alert warning" role="status"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Preview only. This tutor is not visible to students until an officer lists them.</span></p>
+{% elif is_owner %}
+    <p class="alert" role="status"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>This is how students see your profile. Officers manage your times from the admin.</span></p>
+{% endif %}
+
+<div class="profile">
+    <section class="profile-head card card-pad" aria-labelledby="tutor-name">
+        <span class="avatar xl" style="--h: {{ tutor.display_name|hue }}" aria-hidden="true">{{ tutor.initials }}</span>
+        <div class="grow">
+            <h1 id="tutor-name">{{ tutor.display_name }}</h1>
+            <p class="profile-headline">{{ tutor.headline }}</p>
+            <ul class="facts">
+                {% if tutor.grade_label %}<li><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>{{ tutor.grade_label }}</li>{% endif %}
+                <li><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>{{ tutor.location }}</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="profile-book card" aria-labelledby="book-title">
+        <div class="book-head">
+            <h2 id="book-title">Pick a time</h2>
+            <p class="muted small">Times are in {% now "T" %}. Next {{ horizon }} days.</p>
+        </div>
+
+        {% if upcoming_with %}
+            <a class="booked-note" href="{% url 'tutoring:session' upcoming_with.pk %}">
+                <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+                <span>You're booked with {{ tutor.first_name }} on <strong>{{ upcoming_with.start|friendly_day }} at {{ upcoming_with.start|clock }}</strong>. Open chat</span>
+            </a>
+        {% endif %}
+
+        {% if days %}
+            <div class="days">
+                {% for d in visible_days %}
+                    {% include 'tutoring/_day.html' %}
+                {% endfor %}
+                {% if more_days %}
+                    <details class="more-days">
+                        <summary class="btn btn-secondary btn-block">Show {{ more_days|length }} more day{{ more_days|length|pluralize }}</summary>
+                        {% for d in more_days %}{% include 'tutoring/_day.html' %}{% endfor %}
+                    </details>
+                {% endif %}
+            </div>
+            {% if not user.is_authenticated %}
+                <p class="muted small book-foot"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-info"/></svg> You'll log in or sign up on the next step. Your pick is saved.</p>
+            {% endif %}
+        {% else %}
+            <div class="empty compact">
+                <div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div>
+                <h3>No open times right now</h3>
+                <p>{{ tutor.first_name }} hasn't opened any times in the next {{ horizon }} days.</p>
+                <a class="btn btn-secondary btn-sm" href="{% url 'tutoring:directory' %}?open=1">See tutors with open times</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <div class="profile-body stack" style="--gap:20px">
+        <section class="card card-pad">
+            <h2>About {{ tutor.first_name }}</h2>
+            {% if tutor.bio %}<p style="margin-top:10px">{{ tutor.bio|linebreaksbr }}</p>{% else %}<p class="muted" style="margin-top:10px">{{ tutor.first_name }} hasn't added a bio yet.</p>{% endif %}
+        </section>
+        <section class="card card-pad">
+            <h2>Can help with</h2>
+            <ul class="tag-list lg" style="margin-top:12px">
+                {% for s in tutor.subjects.all %}<li><a class="tag" href="{% url 'tutoring:directory' %}?subject={{ s.slug }}">{{ s.name }}</a></li>{% empty %}<li class="muted">Subjects coming soon.</li>{% endfor %}
+            </ul>
+        </section>
+        <section class="card card-pad">
+            <h2>How sessions work</h2>
+            <ol class="steps-mini">
+                <li><strong>Book a time.</strong> It's confirmed right away. No waiting for approval.</li>
+                <li><strong>Chat before you meet.</strong> Share what you're stuck on so {{ tutor.first_name }} can prepare.</li>
+                <li><strong>Meet at {{ tutor.location }}.</strong> Need to cancel? You can until a couple of hours before.</li>
+            </ol>
+        </section>
+    </div>
+</div>
+{% endblock content %}

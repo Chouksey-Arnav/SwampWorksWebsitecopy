@@ -4,14 +4,29 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
+from django.db.models import Count, Q
+
+from tutoring.models import Subject
+from tutoring.services import tutors_with_availability
+
 from .forms import IdeaForm, JoinForm
 from .models import Meeting, Project
 
 
 def index(request):
+    bookable = tutors_with_availability().filter(open_count__gt=0).order_by('next_open')
     return render(request, 'landing_page/index.html', {
         'next_meeting': Meeting.objects.filter(date__gte=timezone.now()).first(),
         'projects': Project.objects.exclude(status='done')[:3],
+        'soon_tutors': list(bookable[:3]),
+        'popular_subjects': Subject.objects.filter(tutors__is_listed=True)
+        .annotate(n=Count('tutors', filter=Q(tutors__is_listed=True))).order_by('-n', 'name')[:4],
+    })
+
+
+def club(request):
+    return render(request, 'landing_page/club.html', {
+        'next_meeting': Meeting.objects.filter(date__gte=timezone.now()).first(),
     })
 
 

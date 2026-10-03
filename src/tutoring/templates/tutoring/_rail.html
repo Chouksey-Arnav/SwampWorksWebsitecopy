@@ -1,0 +1,26 @@
+{% load tutoring_tags %}
+<div class="rail-head"><h2>Messages</h2></div>
+{% if conversations %}
+<ul class="convos">
+    {% for c in conversations %}
+    <li>
+        <a class="convo{% if c.current %} is-current{% endif %}{% if c.unread %} is-unread{% endif %}" href="{% url 'tutoring:session' c.pk %}"{% if c.current %} aria-current="page"{% endif %}>
+            <span class="avatar" style="--h: {{ c.other_name|hue }}" aria-hidden="true">{{ c.other_name|initials_of }}</span>
+            <span class="convo-main">
+                <span class="convo-top"><strong>{{ c.other_name }}</strong><span class="convo-when">{{ c.sort_key|friendly_day }}</span></span>
+                <span class="convo-sub">{% if c.subject %}{{ c.subject.name }} &middot; {% endif %}{{ c.start|friendly_day }}, {{ c.start|clock }}</span>
+                <span class="convo-preview">{{ c.preview }}</span>
+            </span>
+            {% if c.unread %}<span class="badge" aria-label="{{ c.unread }} unread">{{ c.unread }}</span>{% endif %}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="rail-empty">
+    <svg class="icon icon-lg" aria-hidden="true"><use href="#i-message"/></svg>
+    <p><strong>No conversations yet</strong></p>
+    <p class="muted small">A chat opens as soon as you book a session.</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'tutoring:directory' %}">Find a tutor</a>
+</div>
+{% endif %}

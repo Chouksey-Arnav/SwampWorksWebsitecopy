@@ -1,0 +1,15 @@
+{% extends 'landing_page/base.html' %}
+{% block title %}The club - {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>The club</h1><p>{{ CLUB_NAME }} is the IT service club at {{ CLUB_SCHOOL }}. Here's everything outside tutoring.</p></div>
+<div class="grid grid-2">
+    <a class="card card-link feature" href="{% url 'landing_page:about' %}"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></div><h3>About us</h3><p>What the club does and why you'd want to be part of it.</p></a>
+    <a class="card card-link feature" href="{% url 'landing_page:projects' %}"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></div><h3>Projects</h3><p>Real tech we're building for the school and community.</p></a>
+    <a class="card card-link feature" href="{% url 'landing_page:calendar' %}"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>Meetings</h3><p>{% if next_meeting %}Next: {{ next_meeting.date|date:"l, M j" }}.{% else %}Dates and places for club meetings.{% endif %}</p></a>
+    <a class="card card-link feature" href="{% url 'landing_page:ideas' %}"><div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb"/></svg></div><h3>Share an idea</h3><p>Know a problem tech could fix? Tell us.</p></a>
+</div>
+<div class="cta-strip card card-pad">
+    <div class="grow"><h3>Ready to join?</h3><p class="muted" style="margin:0">Takes under a minute. We'll email you the details for the next meeting.</p></div>
+    <a class="btn btn-primary" href="{% url 'landing_page:contact' %}">Join the club</a>
+</div>
+{% endblock content %}
